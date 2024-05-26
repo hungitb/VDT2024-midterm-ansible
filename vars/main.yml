@@ -1,0 +1,11 @@
+---
+fe_docker_image: hungitb/fe
+
+be_docker_image: hungitb/be
+backend_port: 3000
+
+mysql_docker_image: mysql
+mysql_port: 3307
+mysql_database_name: vdt_students
+mysql_user: root
+mysql_password: root

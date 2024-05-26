@@ -1,0 +1,50 @@
+---
+- name: Install required system packages
+  apt:
+    pkg:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - software-properties-common
+      - python3-pip
+      - virtualenv
+      - python3-setuptools
+    state: latest
+    update_cache: true
+
+- name: Add Docker GPG apt Key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: Add Docker Repository
+  apt_repository:
+    repo: deb https://download.docker.com/linux/ubuntu focal stable
+    state: present
+
+- name: Update apt and install docker-ce
+  apt:
+    name: docker-ce
+    state: latest
+    update_cache: true
+
+- name: Install Docker Module for Python
+  pip:
+    name: docker
+
+- name: Install requests library
+  pip:
+    name: requests
+    version: 2.31.0
+
+- name: Start docker daemon
+  shell: sudo service docker start
+  failed_when: false
+  register: start_docker_service
+  changed_when: start_docker_service.rc == 0
+
+- name: Ensure docker deamon is running
+  shell: sudo service docker status
+  register: verification_docker_running
+  failed_when: "'* Docker is running' not in verification_docker_running['stdout']"
+  changed_when: false

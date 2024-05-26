@@ -1,0 +1,39 @@
+- hosts: webserver
+  become: true
+  roles:
+  - docker
+  - webservice
+  vars_files:
+    - vars/main.yml
+  vars:
+    docker_image: "{{ fe_docker_image }}"
+    backend_host: "{{ hostvars[groups['beserver'][0]]['ansible_host'] }}"
+    backend_port: "{{ backend_port }}"
+
+- hosts: dbserver
+  become: true
+  roles:
+  - docker
+  - mysql
+  vars_files:
+    - vars/main.yml
+  vars:
+    docker_image: "{{ mysql_docker_image }}"
+    mysql_port: "{{ mysql_port }}"
+    mysql_password: "{{ mysql_password }}"
+
+- hosts: beserver
+  become: true
+  roles:
+  - docker
+  - apiservice
+  vars_files:
+    - vars/main.yml
+  vars:
+    docker_image: "{{ be_docker_image }}"
+    backend_port: "{{ backend_port }}"
+    mysql_host: "{{ hostvars[groups['dbserver'][0]]['ansible_host'] }}"
+    mysql_port: "{{ mysql_port }}"
+    mysql_user: "{{ mysql_user }}"
+    mysql_password: "{{ mysql_password }}"
+    mysql_database_name: "{{ mysql_database_name }}"

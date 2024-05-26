@@ -1,0 +1,25 @@
+---
+- name: ensures /nginx dir exists
+  file: 
+    path: "/nginx"
+    state: directory
+
+- name: Copy config file
+  template:
+    src: default.conf
+    dest: /nginx/default.conf
+
+- name: Run container
+  community.docker.docker_container:
+    name: "fe_container"
+    image: "{{ docker_image }}"
+    state: started
+    ports:
+    - 80:80
+    volumes:
+    - /nginx/default.conf:/etc/nginx/conf.d/default.conf
+
+- name: UFW - Allow http requests
+  community.general.ufw:
+    rule: allow
+    to_port: 80

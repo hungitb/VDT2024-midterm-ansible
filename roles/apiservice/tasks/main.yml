@@ -1,0 +1,20 @@
+---
+- name: Run container
+  community.docker.docker_container:
+    name: "be_container"
+    image: "{{ docker_image }}"
+    state: started
+    ports:
+    - "{{ backend_port }}:{{ backend_port }}"
+    env:
+      PORT: "{{ backend_port | int }}"
+      MYSQL_HOST: "{{ mysql_host }}"
+      MYSQL_USER: "{{ mysql_user }}"
+      MYSQL_PORT: "{{ mysql_port | int }}"
+      MYSQL_PASSWORD: "{{ mysql_password }}"
+      MYSQL_DATABASE_NAME: "{{ mysql_database_name }}"
+
+- name: UFW - Allow http requests
+  community.general.ufw:
+    rule: allow
+    to_port: "{{ backend_port }}"

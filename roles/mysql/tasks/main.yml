@@ -1,0 +1,17 @@
+---
+- name: Run container
+  community.docker.docker_container:
+    name: "mysql_container"
+    image: "{{ docker_image }}"
+    state: started
+    ports:
+    - "{{ mysql_port}}:3306"
+    volumes:
+    - /var/lib/mysql:/var/lib/mysql
+    env:
+      MYSQL_ROOT_PASSWORD: "{{ mysql_password }}"
+
+- name: UFW - Allow port for requests
+  community.general.ufw:
+    rule: allow
+    to_port: "{{ mysql_port }}"
